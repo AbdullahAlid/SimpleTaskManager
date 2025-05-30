@@ -15,7 +15,7 @@ namespace SimpleTaskManagementWebApplication.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction(nameof(Index), nameof(TaskItem));
         }
 
         public IActionResult Privacy()
