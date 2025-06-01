@@ -71,7 +71,7 @@ namespace SimpleTaskManagementWebApplication.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError(model.UserName, "Invalid login attempt.");
+                    ModelState.AddModelError(model.ReturnUrl, "Invalid login attempt.");
                 }
             }
             return View(model);
