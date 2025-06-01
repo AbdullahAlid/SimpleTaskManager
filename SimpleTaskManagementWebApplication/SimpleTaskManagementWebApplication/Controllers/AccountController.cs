@@ -26,7 +26,7 @@ namespace SimpleTaskManagementWebApplication.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register([Bind("FirstName, LastName, UserName, Password, ConfirmPassword")] RegistrationViewModel rvm)
+        public async Task<IActionResult> Register([Bind("FirstName, LastName, UserName, Email, Password, ConfirmPassword")] RegistrationViewModel rvm)
         {
             if (ModelState.IsValid)
             {
@@ -75,6 +75,12 @@ namespace SimpleTaskManagementWebApplication.Controllers
                 }
             }
             return View(model);
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction(nameof(Login));
         }
     }
 }

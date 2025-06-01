@@ -6,7 +6,7 @@ namespace SimpleTaskManagementWebApplication.Models
     {
         public int Id { get; set; }
         public int AppUserId { get; set; }
-        public AppUser AppUser { get; set; }
+        public AppUser? AppUser { get; set; }
         [Required(ErrorMessage = "Task Title is Required.")]
         public string Title { get; set; }
         public string? Description { get; set; }
