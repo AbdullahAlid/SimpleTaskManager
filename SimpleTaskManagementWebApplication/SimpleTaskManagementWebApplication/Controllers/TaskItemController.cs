@@ -1,22 +1,39 @@
 ﻿using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimpleTaskManagementWebApplication.Data;
 using SimpleTaskManagementWebApplication.Models;
+using SimpleTaskManagementWebApplication.ViewModels;
 
 namespace SimpleTaskManagementWebApplication.Controllers
 {
+    [Authorize]
     public class TaskItemController : Controller
     {
         private readonly ApplicationDbContext _context;
-        public TaskItemController(ApplicationDbContext context)
+        private readonly UserManager<AppUser> _userManager;
+
+        public TaskItemController(ApplicationDbContext context, UserManager<AppUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var tasks = await _context.TaskItems.ToListAsync();
-            return View(tasks);
+            try
+            {
+                int userId = Convert.ToInt32(_userManager.GetUserId(User));
+                var tasks = _context.TaskItems.Where(t => t.AppUserId == userId).ToList();
+                return View(tasks);
+            }
+            catch (Exception)
+            {
+                TempData["message"] = "something went wrong when accessing the tasks";
+                return View();
+            }
+            
         }
 
         public IActionResult Create()
@@ -27,9 +44,106 @@ namespace SimpleTaskManagementWebApplication.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([Bind("Title, Description, DueDate")] TaskItem task)
         {
+            int userId = Convert.ToInt32(_userManager.GetUserId(User));
+            task.AppUserId = userId;
+            if (ModelState.IsValid)
+            {
+                _context.TaskItems.Add(task);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            
             return View(task);
         }
 
+        public async Task<IActionResult> Edit(int id)
+        {
+            var task = await _context.TaskItems.FirstOrDefaultAsync(t => t.Id == id);
+            if (task == null)
+            {
+                return RedirectToAction("Index");
+            }
+            return View(task);
+        }
 
+        [HttpPost]
+        public  async Task<IActionResult> Edit([Bind("Id, Title, Description, DueDate, IsCompleted")] TaskItem task)
+        {
+            if(ModelState.IsValid)
+            {
+                var taskToUpdate = await _context.TaskItems.FirstOrDefaultAsync(t => t.Id == task.Id);
+                if(taskToUpdate is null)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                taskToUpdate.Title = task.Title;
+                taskToUpdate.Description = task.Description;
+                taskToUpdate.DueDate = task.DueDate;
+                taskToUpdate.IsCompleted = task.IsCompleted;
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(task);
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var task = await _context.TaskItems.FirstOrDefaultAsync(t => t.Id == id);           
+                if(task is null)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                _context.TaskItems.Remove(task);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch(Exception)
+            {
+                TempData["message"] = "Something went wrong";
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpPost]
+        public IActionResult FilterAndSort(SearchHelperViewModel search)
+        {
+            int userId = Convert.ToInt32(_userManager.GetUserId(User));
+            var tasks = new List<TaskItem>();
+            if(search.SortValue == null && search.FilterValue == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            else if(search.SortValue != null && search.FilterValue == null)
+            {
+                if(search.SortValue == "ASC")
+                {
+                    tasks = _context.TaskItems.Where(t => t.AppUserId == userId).OrderBy(u => u.DueDate).ToList();
+                }
+                else
+                {
+                    tasks = _context.TaskItems.Where(t => t.AppUserId == userId).OrderByDescending(u => u.DueDate).ToList();
+                }
+            }
+            else if(search.SortValue == null && search.FilterValue != null)
+            {
+                tasks = _context.TaskItems.Where(t => t.AppUserId == userId && t.IsCompleted == search.FilterValue).ToList();
+            }
+            else if (search.SortValue != null && search.FilterValue != null)
+            {
+                if (search.SortValue == "ASC")
+                {
+                   tasks = _context.TaskItems.Where(t => t.AppUserId == userId && t.IsCompleted==search.FilterValue).OrderBy(u => u.DueDate).ToList();
+                }
+                else
+                {
+                    tasks = _context.TaskItems.Where(t => t.AppUserId == userId && t.IsCompleted == search.FilterValue).OrderByDescending(u => u.DueDate).ToList();
+                }
+            }
+
+            return View(nameof(Index), tasks);
+        }
     }
 }

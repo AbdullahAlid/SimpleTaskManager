@@ -6,9 +6,13 @@
 <div class="row justify-content-center">
     <div class="col-md-4">
         <h1>Login</h1>
+<<<<<<< HEAD
         <form asp-action="Register" method="post">
             <input type="hidden" asp-for="ReturnUrl" value="LoginViewModel" />
             <span asp-validation-for="UserName" class="text-danger"></span>
+=======
+        <form asp-action="Login" method="post">
+>>>>>>> 55134d5f0281b2a42c71c18b0140727fbee07512
             <div class="form-group">
                 <label asp-for="UserName"></label>
                 <input type="email" asp-for="UserName" class="form-control" />
@@ -31,3 +35,8 @@
         </form>
     </div>
 </div>
+@section Scripts{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
