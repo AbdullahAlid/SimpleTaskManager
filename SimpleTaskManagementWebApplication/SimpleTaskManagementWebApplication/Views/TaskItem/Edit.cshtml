@@ -1,11 +1,13 @@
 ﻿@model TaskItem
 @{
     ViewData["Title"] = "Edit";
+    string errorMessage = ViewBag.message ?? "";
 }
 
 <div class="row justify-content-center">
     <div class="col-md-4">
         <h1>Edit Task</h1>
+        <p class="text-danger">@errorMessage</p>
         <form asp-action="Edit" method="post">
             <input type="hidden" asp-for="Id" value="@Model.Id" />
             <div class="form-group">

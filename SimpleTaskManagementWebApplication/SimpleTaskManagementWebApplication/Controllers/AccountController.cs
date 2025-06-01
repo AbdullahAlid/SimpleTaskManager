@@ -52,7 +52,7 @@ namespace SimpleTaskManagementWebApplication.Controllers
             return View(rvm);
         }
 
-        public IActionResult Login(string returnUrl)
+        public IActionResult Login(string returnUrl = "/")
         {
             LoginViewModel login = new LoginViewModel();
             login.ReturnUrl = returnUrl;
@@ -71,7 +71,7 @@ namespace SimpleTaskManagementWebApplication.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError(model.UserName, "Invalid login attempt.");
+                    ModelState.AddModelError("ReturnUrl", "Invalid login attempt.");
                 }
             }
             return View(model);

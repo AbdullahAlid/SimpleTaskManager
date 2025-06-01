@@ -2,6 +2,9 @@
 @{
     ViewData["Title"] = "Index";
     var message = TempData["message"] ?? "";
+    var sortValue = TempData["SortValue"] ?? "";
+    bool? filterValue = TempData["FilterValue"] as bool?;
+
 }
 <div class="container">
     <a asp-action="Create" class="btn btn-success">Create</a>
@@ -13,19 +16,19 @@
                 <div class="form-group">
                     <label>Sort on Due Date</label>
                     <select name="SortValue" class="w-100">
-                        <option value="">Select Order</option>
-                        <option value="ASC">Ascending</option>
-                        <option value="DESC">Descending</option>
+                        <option value="" selected="@(sortValue.ToString() == "")">Select Order</option>
+                        <option value="ASC" selected="@(sortValue.ToString() == "ASC")">Ascending</option>
+                        <option value="DESC" selected="@(sortValue.ToString() == "DESC")">Descending</option>
                     </select>
                 </div>
             </div>
             <div class="col-2">
                 <div class="form-group">
-                    <label>Task Completion</label>
+                    <label>Task Completion</label>                    
                     <select name="FilterValue" class="w-100">
-                        <option value=null>Select filter</option>
-                        <option value=false>Not Complete</option>
-                        <option value=true>Complete</option>
+                        <option value="" selected="@(filterValue == null)">Select filter</option>
+                        <option value="false" selected="@(filterValue == false)">Not Complete</option>
+                        <option value="true" selected="@(filterValue == true)">Complete</option>
                     </select>
                 </div>
             </div>
