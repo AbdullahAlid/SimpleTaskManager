@@ -68,7 +68,8 @@ namespace SimpleTaskManagementWebApplication.Controllers
         {
             try
             {
-                var task = await _context.TaskItems.FirstOrDefaultAsync(t => t.Id == id);
+                int userId = Convert.ToInt32(_userManager.GetUserId(User));
+                var task = await _context.TaskItems.FirstOrDefaultAsync(t => t.Id == id && t.AppUserId == userId);
                 if (task == null)
                 {
                     return RedirectToAction("Index");
@@ -90,7 +91,8 @@ namespace SimpleTaskManagementWebApplication.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var taskToUpdate = await _context.TaskItems.FirstOrDefaultAsync(t => t.Id == task.Id);
+                    int userId = Convert.ToInt32((_userManager.GetUserId(User)));
+                    var taskToUpdate = await _context.TaskItems.FirstOrDefaultAsync(t => t.Id == task.Id && t.AppUserId == userId);
 
                     if (taskToUpdate is null)
                     {
@@ -121,7 +123,8 @@ namespace SimpleTaskManagementWebApplication.Controllers
         {
             try
             {
-                var task = await _context.TaskItems.FirstOrDefaultAsync(t => t.Id == id);           
+                int userId = Convert.ToInt32((_userManager.GetUserId(User)));
+                var task = await _context.TaskItems.FirstOrDefaultAsync(t => t.Id == id && t.AppUserId == userId);           
                 if(task is null)
                 {
                     return RedirectToAction(nameof(Index));
