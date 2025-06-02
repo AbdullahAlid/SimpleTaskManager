@@ -22,5 +22,5 @@ A basic ASP.NET Core MVC app to manage a user's own tasks with sorting and filte
 ## Technologies Used
 
 - ### Framework: .net 9
-- ### Tools: Visusal Studio
+- ### Tools: Visusal Studio, sql server management System
 - ### Packages: Microsoft.AspNetCore.Identity.EntityFrameworkCore, Microsoft.EntityFrameworkCore" Version="9.0.5",Microsoft.EntityFrameworkCore.SqlServer", Microsoft.EntityFrameworkCore.Tools
